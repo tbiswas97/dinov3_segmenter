@@ -112,11 +112,8 @@ def _fit_model(
             Array of shape(image height, image width), this is the initial guess during segmentation fitting
         init_eps: float
             This is the amount of uncertainty injected with the initial guess, if None 0.0001 is used as default
-        prior_weights: str
-            determines the nature of the spatial smoothing
-                "ext3" (default): uses Dirichlet hyperparameter
-                IDEA:
-                None: no spatial smoothing
+        spatial_smoothing : bool
+        n_pca : float
 
     Output:
         array of n_im model results (singleton if n_im=1)

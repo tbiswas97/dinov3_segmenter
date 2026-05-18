@@ -192,7 +192,7 @@ class SegmentationMap:
 
     def fit_model(
         self,
-        model="ac",
+        model="c",
         n_components=None,
         max_components=10,
         layer_start=0,
