@@ -267,30 +267,30 @@ class SegmentationMap:
             # only the first layer of AlexNet can be used
             if deepnet == "AlexNet":
                 layer_stop = 1
-        else:
-            # default deepnet is VGG19
-            ny, nx = self.im.shape[:2]
-            # layer sizes for VGG (due to pooling)
-            self.N_list = np.array(
-                [
-                    (ny, nx),
-                    (ny, nx),
-                    (ny // 2, nx // 2),
-                    (ny // 2, nx // 2),
-                    (ny // 4, nx // 4),
-                    (ny // 4, nx // 4),
-                    (ny // 4, nx // 4),
-                    (ny // 4, nx // 4),
-                    (ny // 8, nx // 8),
-                    (ny // 8, nx // 8),
-                    (ny // 8, nx // 8),
-                    (ny // 8, nx // 8),
-                    (ny // 16, nx // 16),
-                    (ny // 16, nx // 16),
-                    (ny // 16, nx // 16),
-                    (ny // 16, nx // 16),
-                ]
-            )
+        # else:
+        ## default deepnet is VGG19
+        # ny, nx = self.im.shape[:2]
+        ## layer sizes for VGG (due to pooling)
+        # self.N_list = np.array(
+        # [
+        # (ny, nx),
+        # (ny, nx),
+        # (ny // 2, nx // 2),
+        # (ny // 2, nx // 2),
+        # (ny // 4, nx // 4),
+        # (ny // 4, nx // 4),
+        # (ny // 4, nx // 4),
+        # (ny // 4, nx // 4),
+        # (ny // 8, nx // 8),
+        # (ny // 8, nx // 8),
+        # (ny // 8, nx // 8),
+        # (ny // 8, nx // 8),
+        # (ny // 16, nx // 16),
+        # (ny // 16, nx // 16),
+        # (ny // 16, nx // 16),
+        # (ny // 16, nx // 16),
+        # ]
+        # )
         if keep:
             assert model == "c", 'Must use model "c" if keep is True'
 
