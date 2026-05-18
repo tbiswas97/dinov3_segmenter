@@ -263,12 +263,11 @@ class SegmentationMap:
         self.data : ndarray
         self.model_fitted: model Object
         """
-        if deepnet is not None:
+        if deepnet in {"alexnet", "dinov3"}:
+            layer_stop = 1
+
+        if deepnet is None:
             deepnet = "vgg19"
-        elif deepnet == "alexnet":
-            layer_stop = 1
-        elif deepnet == "dinov3":
-            layer_stop = 1
 
         if keep:
             assert model == "c", 'Must use model "c" if keep is True'
@@ -346,11 +345,18 @@ class SegmentationMap:
                 self.model_res["c"] = self._model_res["c"]
 
             # parse attributes of the model
+            if deepnet in {"alexnet", "AlexNet"}:
+                reshape_size = (56, 56)
+            elif deepnet in {"dinov3", "DINOV3"}:
+                reshape_size = (16, 16)
+            else:
+                reshape_size = self.im.shape[:2]
+
             weights = self._res_iter.T[0].squeeze()
             self.flat_weights = make_array(weights)
             self.weights_t = np.asarray(
                 [
-                    weight.reshape((*self.im.shape[:2], self.model_components[0]))
+                    weight.reshape((*reshape_size, self.model_components[0]))
                     for weight in weights
                     if type(weight) != int
                 ]
@@ -364,7 +370,7 @@ class SegmentationMap:
             responsibilities = self._res_iter.T[4].squeeze()
             self.responsibilities_t = np.asarray(
                 [
-                    resp.reshape((*self.im.shape[:2], self.model_components[0]))
+                    resp.reshape((*reshape_size, self.model_components[0]))
                     for resp in responsibilities
                     if type(resp) != int
                 ]
@@ -373,12 +379,10 @@ class SegmentationMap:
 
             self.flat_pca = make_array(self._res_iter.T[6].squeeze()[0])
             self.data_pca = (
-                self._res_iter.T[6].squeeze()[0].reshape((*self.im.shape[:2], -1))
+                self._res_iter.T[6].squeeze()[0].reshape((*reshape_size, -1))
             )
 
-            self.data = (
-                self._res_iter.T[7].squeeze()[0].reshape((*self.im.shape[:2], -1))
-            )
+            self.data = self._res_iter.T[7].squeeze()[0].reshape((*reshape_size, -1))
             self.model_fitted = self.model_res["c"].squeeze()[2]
 
         else:
