@@ -167,23 +167,27 @@ def _fit_model(
                 512,
             ]
         )
+
+        neigh_size_list = 1.0 * np.array(
+            [17, 17, 13, 13, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3]
+        )
+
         deepnet = models.vgg19(pretrained=pretrained).features.to(device).eval()
+
     elif deepnet == "AlexNet":
         deepnet = models.alexnet(pretrained=True).features.to("cpu").eval()
         assert ny, nx == 227
         N_list = np.array([(int(((ny - 11) / 4)) + 2, int(((nx - 11) / 4) + 2))])
         d_list = [64]
         ny, nx = N_list[0]
+        neigh_size_list = 1.0 * np.array([17])
         d = d_list[0]
 
-    # NOTE:neighborhood size used for spatial smoothing
-    if neigh_size_list is not None:
-        neigh_size_list = neigh_size_list
-    else:
-        neigh_size_list = 1.0 * np.array(
-            [17, 17, 13, 13, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3]
-        )
-    # FIXME: for ppca = True, model b and c don't work
+    elif deepnet == "dinov3":
+        N_list = np.array([(ny // 16, nx // 16)])
+        d_list = np.array([384])
+        neigh_size_list = 1.0 * np.array([3])
+
     ppca = False
     light = True
 
