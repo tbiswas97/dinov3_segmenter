@@ -2,7 +2,6 @@ import numpy as np
 import torch
 from pathlib import Path
 
-
 DEFAULT_REPO_DIR = Path(__file__).resolve().parents[2]
 DEFAULT_WEIGHTS_DIR = DEFAULT_REPO_DIR / "pretrained"
 
@@ -124,6 +123,7 @@ def extract_features(model, im_torch, *, norm=True):
         std = x.new_tensor(IMAGENET_STD).view(1, 3, 1, 1)
         x = (x - mean) / std
 
+    # dinov3 api n refers to last `n' layers
     with torch.inference_mode():
         feats = model.get_intermediate_layers(
             x,
