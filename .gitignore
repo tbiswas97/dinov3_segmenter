@@ -17,3 +17,6 @@ dist/
 
 # Ignore vscode directory
 .vscode/
+
+# Ignore pretrained weights
+**/pretrained
