@@ -22,7 +22,6 @@ from IPython.display import clear_output
 from segmentation.seg.smm_prior import *
 from segmentation.seg.gmm_prior import *
 
-
 """ 
 Helper: get features from each layer and send them back as numpy arrays
 """
@@ -52,6 +51,13 @@ def _reshape_deep_layers(result, layer, N_list, d_list):
 
 
 # Get deep features from <model> as applied to <im_torch>
+def get_deep_features(model, im_torch):
+    if hasattr(model, "get_intermediate_layers"):
+        print("using a transformer")
+    else:
+        return get_conv2d_features(model, im_torch)
+
+
 def get_conv2d_features(model, im_torch):
     deep_features = []
     for i in range(1, len(model) + 1):
@@ -92,7 +98,8 @@ def model_ref(
     res = np.zeros((L, K, 3, 1), dtype=object)
 
     # compute deep features
-    deep_features = get_conv2d_features(model, im_torch)
+    deep_features = get_deep_features(model, im_torch)
+    # deep_features = get_conv2d_features(model, im_torch)
 
     # run fit
     """
