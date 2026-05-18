@@ -265,6 +265,10 @@ class SegmentationMap:
         """
         if deepnet is not None:
             deepnet = "vgg19"
+        elif deepnet == "alexnet":
+            layer_stop = 1
+        elif deepnet == "dinov3":
+            layer_stop = 1
 
         if keep:
             assert model == "c", 'Must use model "c" if keep is True'
