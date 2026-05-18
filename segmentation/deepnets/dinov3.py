@@ -1,7 +1,9 @@
 import numpy as np
 import torch
+from pathlib import Path
 
 
+DEFAULT_REPO_DIR = Path(__file__).resolve().parents[2]
 MODEL_NAME = "dinov3_vits16"
 PATCH_SIZE = 16
 EMBED_DIM = 384
@@ -21,7 +23,7 @@ def get_n_list(ny, nx, patch_size=PATCH_SIZE):
 
 def load_model(
     *,
-    repo_dir,
+    repo_dir=DEFAULT_REPO_DIR,
     model_name=MODEL_NAME,
     weights=None,
     pretrained=True,
@@ -29,7 +31,7 @@ def load_model(
     **hub_kwargs,
 ):
     if repo_dir is None:
-        raise ValueError("repo_dir is required for local DINOv3 torch.hub loading")
+        repo_dir = DEFAULT_REPO_DIR
 
     cache_key = (
         str(repo_dir),
@@ -77,7 +79,7 @@ def build(
     nx,
     *,
     device="cpu",
-    repo_dir=None,
+    repo_dir=DEFAULT_REPO_DIR,
     weights=None,
     model_name=MODEL_NAME,
     pretrained=True,
