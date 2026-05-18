@@ -1,5 +1,6 @@
 from segmentation.seg.models_deep_seg import *
 from segmentation.seg.pyramid import *
+from segmentation.deepnets.registry import get_deepnet
 
 from scipy.stats import entropy
 import pandas as pd
@@ -124,69 +125,70 @@ def _fit_model(
     K_list = n_components
     ny, nx = im.shape[0:2]
     # NOTE: output size at each convolutional layer of deepnet
-    if deepnet == "vgg19":
-        N_list = np.array(
-            [
-                (ny, nx),
-                (ny, nx),
-                (ny // 2, nx // 2),
-                (ny // 2, nx // 2),
-                (ny // 4, nx // 4),
-                (ny // 4, nx // 4),
-                (ny // 4, nx // 4),
-                (ny // 4, nx // 4),
-                (ny // 8, nx // 8),
-                (ny // 8, nx // 8),
-                (ny // 8, nx // 8),
-                (ny // 8, nx // 8),
-                (ny // 16, nx // 16),
-                (ny // 16, nx // 16),
-                (ny // 16, nx // 16),
-                (ny // 16, nx // 16),
-            ]
-        )
+    spec = get_deepnet(deepnet, ny, nx, device="cpu", layer=layer)
+    # if deepnet == "vgg19":
+    # N_list = np.array(
+    # [
+    # (ny, nx),
+    # (ny, nx),
+    # (ny // 2, nx // 2),
+    # (ny // 2, nx // 2),
+    # (ny // 4, nx // 4),
+    # (ny // 4, nx // 4),
+    # (ny // 4, nx // 4),
+    # (ny // 4, nx // 4),
+    # (ny // 8, nx // 8),
+    # (ny // 8, nx // 8),
+    # (ny // 8, nx // 8),
+    # (ny // 8, nx // 8),
+    # (ny // 16, nx // 16),
+    # (ny // 16, nx // 16),
+    # (ny // 16, nx // 16),
+    # (ny // 16, nx // 16),
+    # ]
+    # )
 
-        # NOTE: embedding dimensions at each convolutional layer of deepnet
-        d_list = np.array(
-            [
-                64,
-                64,
-                128,
-                128,
-                256,
-                256,
-                256,
-                256,
-                512,
-                512,
-                512,
-                512,
-                512,
-                512,
-                512,
-                512,
-            ]
-        )
+    ## NOTE: embedding dimensions at each convolutional layer of deepnet
+    # d_list = np.array(
+    # [
+    # 64,
+    # 64,
+    # 128,
+    # 128,
+    # 256,
+    # 256,
+    # 256,
+    # 256,
+    # 512,
+    # 512,
+    # 512,
+    # 512,
+    # 512,
+    # 512,
+    # 512,
+    # 512,
+    # ]
+    # )
 
-        neigh_size_list = 1.0 * np.array(
-            [17, 17, 13, 13, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3]
-        )
+    # neigh_size_list = 1.0 * np.array(
+    # [17, 17, 13, 13, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3]
+    # )
 
-        deepnet = models.vgg19(pretrained=pretrained).features.to(device).eval()
+    # deepnet = models.vgg19(pretrained=pretrained).features.to(device).eval()
 
-    elif deepnet == "AlexNet":
-        deepnet = models.alexnet(pretrained=True).features.to("cpu").eval()
-        assert ny, nx == 227
-        N_list = np.array([(int(((ny - 11) / 4)) + 2, int(((nx - 11) / 4) + 2))])
-        d_list = [64]
-        ny, nx = N_list[0]
-        neigh_size_list = 1.0 * np.array([17])
-        d = d_list[0]
+    # elif deepnet == "AlexNet":
+    # deepnet = models.alexnet(pretrained=True).features.to("cpu").eval()
+    # assert ny, nx == 227
+    # N_list = np.array([(int(((ny - 11) / 4)) + 2, int(((nx - 11) / 4) + 2))])
+    # d_list = [64]
+    # ny, nx = N_list[0]
+    # neigh_size_list = 1.0 * np.array([17])
+    # d = d_list[0]
 
-    elif deepnet == "dinov3":
-        N_list = np.array([(ny // 16, nx // 16)])
-        d_list = np.array([384])
-        neigh_size_list = 1.0 * np.array([3])
+    # elif deepnet == "dinov3":
+    # N_list = np.array([(ny // 16, nx // 16)])
+    # d_list = np.array([384])
+    # neigh_size_list = 1.0 * np.array([3])
 
     ppca = False
     light = True
