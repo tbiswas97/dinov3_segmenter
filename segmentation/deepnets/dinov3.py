@@ -4,9 +4,36 @@ from pathlib import Path
 
 
 DEFAULT_REPO_DIR = Path(__file__).resolve().parents[2]
-MODEL_NAME = "dinov3_vits16"
+DEFAULT_WEIGHTS_DIR = DEFAULT_REPO_DIR / "pretrained"
+
+MODEL_DINOV3_VITS = "dinov3_vits16"
+MODEL_DINOV3_VITSP = "dinov3_vits16plus"
+MODEL_DINOV3_VITB = "dinov3_vitb16"
+MODEL_DINOV3_VITL = "dinov3_vitl16"
+MODEL_DINOV3_VITHP = "dinov3_vith16plus"
+MODEL_DINOV3_VIT7B = "dinov3_vit7b16"
+
+MODEL_TO_NUM_LAYERS = {
+    MODEL_DINOV3_VITS: 12,
+    MODEL_DINOV3_VITSP: 12,
+    MODEL_DINOV3_VITB: 12,
+    MODEL_DINOV3_VITL: 24,
+    MODEL_DINOV3_VITHP: 32,
+    MODEL_DINOV3_VIT7B: 40,
+}
+
+MODEL_TO_EMBED_DIM = {
+    MODEL_DINOV3_VITS: 384,
+    MODEL_DINOV3_VITSP: 384,
+    MODEL_DINOV3_VITB: 768,
+    MODEL_DINOV3_VITL: 1024,
+    MODEL_DINOV3_VITHP: 1280,
+    MODEL_DINOV3_VIT7B: 4096,
+}
+
+MODEL_NAME = MODEL_DINOV3_VITS
 PATCH_SIZE = 16
-EMBED_DIM = 384
+EMBED_DIM = MODEL_TO_EMBED_DIM[MODEL_NAME]
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
 
@@ -21,6 +48,34 @@ def get_n_list(ny, nx, patch_size=PATCH_SIZE):
     return np.array([(ny // patch_size, nx // patch_size)])
 
 
+def get_default_weights(model_name=MODEL_NAME, repo_dir=DEFAULT_REPO_DIR):
+    weights_dir = Path(repo_dir) / "pretrained"
+    weights_subdir = weights_dir / "dinov3"
+    compact_name = model_name.replace("dinov3_", "")
+
+    patterns = [
+        (weights_subdir, f"{model_name}*.pth"),
+        (weights_dir, f"{model_name}*.pth"),
+        (weights_subdir, f"dinov3*{compact_name}*.pth"),
+        (weights_dir, f"dinov3*{compact_name}*.pth"),
+    ]
+
+    candidates = []
+    for directory, pattern in patterns:
+        if directory.exists():
+            candidates.extend(directory.glob(pattern))
+
+    candidates = sorted(set(candidates))
+    if not candidates:
+        return None
+    if len(candidates) > 1:
+        raise ValueError(
+            f"Multiple local weights found for {model_name}: "
+            + ", ".join(str(path) for path in candidates)
+        )
+    return str(candidates[0])
+
+
 def load_model(
     *,
     repo_dir=DEFAULT_REPO_DIR,
@@ -32,6 +87,12 @@ def load_model(
 ):
     if repo_dir is None:
         repo_dir = DEFAULT_REPO_DIR
+    repo_dir = Path(repo_dir)
+
+    if weights is None:
+        weights = get_default_weights(model_name=model_name, repo_dir=repo_dir)
+    elif isinstance(weights, Path):
+        weights = str(weights)
 
     cache_key = (
         str(repo_dir),
@@ -84,9 +145,15 @@ def build(
     model_name=MODEL_NAME,
     pretrained=True,
     patch_size=PATCH_SIZE,
-    embed_dim=EMBED_DIM,
+    embed_dim=None,
     **hub_kwargs,
 ):
+    if model_name not in MODEL_TO_NUM_LAYERS:
+        raise ValueError(f"Unsupported DINOv3 model: {model_name}")
+
+    if embed_dim is None:
+        embed_dim = MODEL_TO_EMBED_DIM[model_name]
+
     model = load_model(
         repo_dir=repo_dir,
         model_name=model_name,
@@ -106,4 +173,5 @@ def build(
         "extract_features": extract_features,
         "patch_size": patch_size,
         "embed_dim": embed_dim,
+        "num_layers": MODEL_TO_NUM_LAYERS[model_name],
     }
