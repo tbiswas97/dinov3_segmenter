@@ -7,7 +7,6 @@ import h5py
 import pickle
 import socket
 
-
 hostname = socket.gethostname()
 if hostname == "Tridibs-MacBook-Pro.local":
     SESSION_PATH = "/Users/tb/Documents/lab/projects/sun_workspace/"
@@ -73,9 +72,7 @@ def get_exp_info(EXP_NAME, index=None):
         d = {"SESSION_MAT_PATH": SESSION_MAT_PATH, "SESSION_IMS": SESSION_IMS}
     elif EXP_NAME == "Oberon":
         SESSION_MAT_PATH = os.path.abspath(
-            os.path.join(
-                os.path.dirname(SESSION_PATH), EXP_NAME, "I01l130034out.mat"
-            )
+            os.path.join(os.path.dirname(SESSION_PATH), EXP_NAME, "I01l130034out.mat")
         )
         d = {"SESSION_MAT_PATH": SESSION_MAT_PATH}
     else:
@@ -94,7 +91,7 @@ def read_file_lines(filename):
     return lines
 
 
-def norm_im(arr, check_even=True):
+def norm_im(arr, check_even=False):
     """
     Normalizes image input into segmentation model
     """
