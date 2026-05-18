@@ -21,7 +21,7 @@ import scipy.special
 import scipy.optimize
 import scipy.signal
 from scipy.ndimage import gaussian_filter
-import toolbox as tb
+from segmentation import toolbox as tb
 
 import warnings
 

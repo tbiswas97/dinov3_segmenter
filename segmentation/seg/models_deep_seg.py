@@ -19,8 +19,8 @@ import copy
 import sys
 from IPython.display import clear_output
 
-from seg.smm_prior import *
-from seg.gmm_prior import *
+from segmentation.seg.smm_prior import *
+from segmentation.seg.gmm_prior import *
 
 
 """ 

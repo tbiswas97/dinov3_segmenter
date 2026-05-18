@@ -1,5 +1,5 @@
-from seg.models_deep_seg import *
-from seg.pyramid import *
+from segmentation.seg.models_deep_seg import *
+from segmentation.seg.pyramid import *
 
 from scipy.stats import entropy
 import pandas as pd

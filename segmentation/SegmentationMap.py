@@ -1,12 +1,12 @@
 import os
-import import_utils
-import toolbox as tb
+from segmentation import import_utils
+from segmentation import toolbox as tb
 import numpy as np
 from scipy.stats import mannwhitneyu
 import pandas as pd
 import seaborn as sns
-import seg.segment as seg
-import dynamics as dynamics
+from segmentation.seg import segment as seg
+from segmentation import dynamics as dynamics
 from numpy.lib.stride_tricks import sliding_window_view
 from numpy.random import default_rng
 

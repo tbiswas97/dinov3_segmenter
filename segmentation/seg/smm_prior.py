@@ -30,7 +30,7 @@ import scipy.optimize
 import scipy.signal
 import scipy.ndimage
 from scipy.ndimage import gaussian_filter
-import toolbox as tb
+from segmentation import toolbox as tb
 
 import warnings
 import time
