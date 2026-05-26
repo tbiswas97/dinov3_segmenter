@@ -283,7 +283,6 @@ class SegmentationMap:
         # if 3 not in n_components:
         # n_components = np.append(n_components, 3)
 
-        n_components = n_components[n_components < max_components]
 
         # model_components is the number of components used by the model at runtime
         self.model_components = n_components
