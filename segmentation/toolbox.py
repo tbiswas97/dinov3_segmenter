@@ -23,6 +23,8 @@ from matplotlib import image
 from collections import Counter
 import math
 import pandas as pd
+import torch
+import torchvision.transforms.functional as TF
 
 from sklearn.feature_selection import f_regression
 from sklearn import linear_model
@@ -1885,3 +1887,23 @@ def clip_inf_array(array):
     out = np.clip(array, a_min=bot_clip, a_max=top_clip)
 
     return out
+
+
+def resize_transform(
+    mask_image, image_size: int = 320, patch_size: int = 16, tensor=True
+) -> torch.Tensor:
+    w, h = mask_image.size
+    h_patches = int(image_size / patch_size)
+    w_patches = int((w * image_size) / (h * patch_size))
+
+    out = TF.to_tensor(
+        TF.resize(mask_image, (h_patches * patch_size, w_patches * patch_size))
+    )
+    if tensor:
+        return TF.to_tensor(
+            TF.resize(mask_image, (h_patches * patch_size, w_patches * patch_size))
+        )
+    else:
+        out = out.numpy().transpose(1, 2, 0)
+
+        return out
